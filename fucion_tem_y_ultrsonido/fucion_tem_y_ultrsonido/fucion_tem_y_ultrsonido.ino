@@ -38,10 +38,11 @@ void loop()
     Distance = duration * 0.034 / 2;
     
     //creacion del jeison
-    JSON ="{\n \"ID\": 001, \n\"id_casa\":002 \n \"variavle\": [\n{\"temperatura\": 35 C},\n{\"Humedad\": 85 %},\n{\"distancia Cm\": 10 Cm},\n{\"distancia mm\": 100 mm}\n ]\n}"
+ //   JSON ="{\n \"ID\": 001, \n\"id_casa\":002 \n \"variavle\": [\n{\"temperatura\": 35 C},\n{\"Humedad\": 85 %},\n{\"distancia Cm\": 10 Cm},\n{\"distancia mm\": 100 mm}\n ]\n}"
 
     // Prints the distance on the Serial Monitor
-    Serial.print("Distance: ");
-    Serial.println(stringdistance + " Cm");
-    Serial.print(JSON);
+    Serial.print("Distancia: ");
+    Serial.println( String (Distance) + " Cm");
+    delay(800);
+   // Serial.print(JSON);
 }

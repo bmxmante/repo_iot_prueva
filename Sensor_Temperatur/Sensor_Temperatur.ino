@@ -1,30 +1,31 @@
+  
+#include "DHT.h"
+#define DHTPIN 15
+#define DHTTYPE DHT11
 
-#include <DHT.h>    // importa la Librerias DHT
-#include <DHT_U.h>
+DHT dht(DHTPIN, DHTTYPE);
 
-int SENSOR = 7;     // pin DATA de DHT22 a pin digital 2
-float TEMPERATURA;
-int HUMEDAD;
-int LED = 13;   
+void setup() {
+Serial.begin(9600);
+Serial.println(F("DHTxx test!"));
 
-DHT dht(SENSOR, DHT11);   // creacion del objeto, cambiar segundo parametro
-        // por DHT11 si se utiliza en lugar del DHT22
-void setup(){
-  Serial.begin(9600);   // inicializacion de monitor serial
-  dht.begin();      // inicializacion de sensor
-  pinMode(LED, OUTPUT);  
+dht.begin();
 }
 
-void loop(){
-    leertemp();
-  delay(500);
+void loop() {
+delay(2000); //Es un sensor lento, por lo que hay que darle tiempo.
+float h = dht.readHumidity();
+float t = dht.readTemperature();
+
+if (isnan(h) || isnan(t)) {
+Serial.println(F("Failed to read from DHT sensor!"));
+return;
 }
 
-  void leertemp()
-  {
-    TEMPERATURA = dht.readTemperature();  // obtencion de valor de temperatura
-    HUMEDAD = dht.readHumidity();   // obtencion de valor de humedad
-    Serial.print("Temperatura: "+String (TEMPERATURA)+" Humedad: "+String(HUMEDAD));  // escritura en monitor serial de los valores
-      if (TEMPERATURA>=34) digitalWrite(LED, HIGH);
-      else { digitalWrite(LED, LOW);} 
-  }
+Serial.print(F("Humedad: "));
+Serial.print(h);
+Serial.print(F("% Temperatura: "));
+Serial.print(t);
+Serial.println(F("°C "));
+
+}
