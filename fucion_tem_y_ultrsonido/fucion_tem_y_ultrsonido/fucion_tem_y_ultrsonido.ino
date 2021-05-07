@@ -1,24 +1,23 @@
-#include <DHT.h>
-#include DHTPIN 4
-#include DHTTIPE DHT11
+//#include <DHT.h>
+//#include DHTPIN 4
 
-DHT dht(DHTPIN, DHTTIPE)
+//DHT dht(DHTPIN, DHTTIPE)
 
     // defines pins numbers
     const int trigPin = 2;
-const int echoPin = 5;
+    const int echoPin = 5;
 
 // defines variables
 long duration;
-int distance;
+int Distance;
 String stringdistance;
-
+String JSON;
 void setup()
 {
     pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
     pinMode(echoPin, INPUT);  // Sets the echoPin as an Input
     Serial.begin(9600);       // Starts the serial communication
-    dht.begin();
+//    dht.begin();
 }
 
 void loop()
@@ -36,9 +35,13 @@ void loop()
     duration = pulseIn(echoPin, HIGH);
 
     // Calculating the distance
-    distance = duration * 0.034 / 2;
+    Distance = duration * 0.034 / 2;
+    
+    //creacion del jeison
+    JSON ="{\n \"ID\": 001, \n\"id_casa\":002 \n \"variavle\": [\n{\"temperatura\": 35 C},\n{\"Humedad\": 85 %},\n{\"distancia Cm\": 10 Cm},\n{\"distancia mm\": 100 mm}\n ]\n}"
 
     // Prints the distance on the Serial Monitor
     Serial.print("Distance: ");
     Serial.println(stringdistance + " Cm");
+    Serial.print(JSON);
 }
