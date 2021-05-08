@@ -8,10 +8,10 @@
 //**************************************
 const char *mqtt_server = "ioticos.org";
 const int   mqtt_port =1883 ;
-const char *mqtt_user = "A5ZOBGWNzCKxWEv";
-const char *mqtt_pass = "paZItMfxwM9YAVP";
-const char *root_topic_subscribe = "rwVqlw6hkGU4dQI/input";
-const char *root_topic_publish = "rwVqlw6hkGU4dQI/output";
+const char *mqtt_user = "ObR3tRVx5nghNer";
+const char *mqtt_pass = "ZqpHVjEV84O48RS";
+const char *root_topic_subscribe = "hF39Jx1E462loPz/input";
+const char *root_topic_publish = "hF39Jx1E462loPz/output";
 
 
 //**************************************
@@ -44,10 +44,6 @@ void setup() {
   client.setServer(mqtt_server, mqtt_port); 
   client.setCallback(callback);
 }
-
-
-
-
 
 void loop() {
   
@@ -119,13 +115,14 @@ void reconnect() {
         {
           Serial.println("fallo Suscripciión");
         }
-      } else 
+      } 
+      else 
       {
       Serial.print("falló :( con error -> ");
       Serial.print(client.state());
       Serial.println(" Intentamos de nuevo en 5 segundos");
       delay(5000);
-    }
+     }
   }
 }
 
