@@ -1,7 +1,9 @@
-//#include <DHT.h>
-//#include DHTPIN 4
+#include "DHT.h"
+#define DHTPIN 15
+#define DHTTYPE DHT11
 
-//DHT dht(DHTPIN, DHTTIPE)
+
+DHT dht(DHTPIN, DHTTYPE);
 
     // defines pins numbers
     const int trigPin = 2;
@@ -12,19 +14,24 @@ long duration;
 int Distance;
 String stringdistance;
 String JSON;
+
 void setup()
 {
     pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
     pinMode(echoPin, INPUT);  // Sets the echoPin as an Input
     Serial.begin(9600);       // Starts the serial communication
-//    dht.begin();
+    dht.begin();
 }
 
 void loop()
 {
+  
     // Clears the trigPin
     digitalWrite(trigPin, LOW);
     delayMicroseconds(2);
+
+    float h = dht.readHumidity();
+    float t = dht.readTemperature();
 
     // Sets the trigPin on HIGH state for 10 micro seconds
     digitalWrite(trigPin, HIGH);
@@ -43,6 +50,11 @@ void loop()
     // Prints the distance on the Serial Monitor
     Serial.print("Distancia: ");
     Serial.println( String (Distance) + " Cm");
+    Serial.print(F("Humedad: "));
+    Serial.print(h);
+    Serial.print(F("% Temperatura: "));
+    Serial.print(t);
+    Serial.println(F("°C "));
     delay(800);
    // Serial.print(JSON);
 }
