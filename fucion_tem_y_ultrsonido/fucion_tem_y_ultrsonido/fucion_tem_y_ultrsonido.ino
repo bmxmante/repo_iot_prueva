@@ -14,6 +14,7 @@ long duration;
 int Distance;
 String stringdistance;
 String JSON;
+int  D_ant,h_ant,t_ant;
 
 void setup()
 {
@@ -48,13 +49,18 @@ void loop()
  //   JSON ="{\n \"ID\": 001, \n\"id_casa\":002 \n \"variavle\": [\n{\"temperatura\": 35 C},\n{\"Humedad\": 85 %},\n{\"distancia Cm\": 10 Cm},\n{\"distancia mm\": 100 mm}\n ]\n}"
 
     // Prints the distance on the Serial Monitor
-    Serial.print("Distancia: ");
-    Serial.println( String (Distance) + " Cm");
-    Serial.print(F("Humedad: "));
-    Serial.print(h);
-    Serial.print(F("% Temperatura: "));
-    Serial.print(t);
-    Serial.println(F("°C "));
-    delay(800);
+    if(D_ant != Distance || h_ant!=h )//|| t_ant!=t;)
+      {
+        Serial.print("Distancia: ");
+        Serial.println( String (Distance) + " Cm");
+        Serial.print(F("Humedad: "));
+        Serial.print(h);
+        Serial.print(F("% Temperatura: "));
+        Serial.print(t);
+        Serial.println(F("°C "));
+      }
+      D_ant=Distance;
+      h_ant=h;
+      t_ant=t;
    // Serial.print(JSON);
 }
