@@ -13,7 +13,7 @@ const int echoPin = 5;
 
 long duration;
 int D_ant,Distance;
-String stringdistance,str;
+String stringdistance,str,tem;
 //String JSON;
 float  h_ant,t_ant;
 
@@ -26,6 +26,7 @@ const char *mqtt_user = "ObR3tRVx5nghNer";
 const char *mqtt_pass = "ZqpHVjEV84O48RS";
 const char *root_topic_subscribe = "hF39Jx1E462loPz/input";
 const char *root_topic_publish = "hF39Jx1E462loPz/output";
+const char *root_topic_tem = "hF39Jx1E462loPz/tem";
 
 
 //**************************************
@@ -42,6 +43,7 @@ const char* password =  "Kinkbmx.";
 WiFiClient espClient;
 PubSubClient client(espClient);
 char msg[57];
+char msgtem[25];
 //long count=0;
 
 
@@ -70,53 +72,47 @@ void loop() {
     reconnect();
   }
 
-  if (client.connected())
-  {
-     // limpia los pines de trigpin 
-    digitalWrite(trigPin, LOW);
-    delayMicroseconds(10);
-
-    float h = dht.readHumidity();
-    float t = dht.readTemperature();
-
-    // coloca el trigpin en alto durante 10 microsegundos
-    digitalWrite(trigPin, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(trigPin, LOW);
-
-    // lee el pin echo y debuelvo el tiempo de ida y vuelta de la onda en microsegundos
-    duration = pulseIn(echoPin, HIGH);
-
-    // Calculo la distancio con esta ecuacion
-    Distance = duration * 0.034 / 2;
-
-     str ="Distancia: " + String (Distance) + " Cm"+"Humedad: "+ h +"% Temperatura: "+ t +"°C ";        
-    
-    // muestro en pantalla las variables
-    if(D_ant != Distance || h_ant != h || t_ant != t)
-      {
-
-        str.toCharArray(msg,57);
-        client.publish(root_topic_publish,msg);
-     
-//        Serial.print("Distancia: ");
-//        Serial.println( String (Distance) + " Cm");
-//        Serial.print(F("Humedad: "));
-//        Serial.print(h);
-//        Serial.print(F("% Temperatura: "));
-//        Serial.print(t);
-//        Serial.println(F("°C "));
-      }
-      D_ant=Distance;
-      h_ant=h;
-      t_ant=t;
-      delay(1000);
-  }
+    if (client.connected())
+    {
+       // limpia los pines de trigpin 
+      digitalWrite(trigPin, LOW);
+      delayMicroseconds(10);
+  
+      float h = dht.readHumidity();
+      float t = dht.readTemperature();
+  
+      // coloca el trigpin en alto durante 10 microsegundos
+      digitalWrite(trigPin, HIGH);
+      delayMicroseconds(10);
+      digitalWrite(trigPin, LOW);
+  
+      // lee el pin echo y debuelvo el tiempo de ida y vuelta de la onda en microsegundos
+      duration = pulseIn(echoPin, HIGH);
+  
+      // Calculo la distancio con esta ecuacion
+      Distance = duration * 0.034 / 2;
+  
+       str = " Distancia: " + String (Distance) + " Cm "+"Humedad: "+ h +"% Temperatura: "+ t +"°C ";        
+       tem = "Temperatura: "+ String (t) +"°C "; 
+      // muestro en pantalla las variables
+        if(D_ant != Distance || h_ant != h || t_ant != t)
+          {
+           str.toCharArray(msg,57);
+           client.publish(root_topic_publish,msg);
+           
+           tem.toCharArray(msgtem,25);
+           client.publish(root_topic_tem,msgtem);
+          }
+        D_ant=Distance;
+        h_ant=h;
+        t_ant=t;
+        delay(1000);
+     }
+client.loop();
 
   //*****************************
   //***    CONEXION WIFI      ***
-  //*****************************
-  client.loop();
+  //*****************************  
   }
   void setup_wifi()
   {
@@ -138,7 +134,7 @@ void loop() {
     Serial.println("Conectado a red WiFi!");
     Serial.println("Dirección IP: ");
     Serial.println(WiFi.localIP());
-}
+  }
 
 
 
@@ -146,9 +142,11 @@ void loop() {
 //***    CONEXION MQTT      ***
 //*****************************
 
-void reconnect() {
+void reconnect() 
+{
 
-  while (!client.connected()) {
+  while (!client.connected()) 
+  {
     Serial.print("Intentando conexión Mqtt...");
     // Creamos un cliente ID
     String clientId = "IOTICOS_H_W_";
@@ -158,12 +156,14 @@ void reconnect() {
       {
         Serial.println("Conectado!");
         // Nos suscribimos
-        if(client.subscribe(root_topic_subscribe)){
-          Serial.println("Suscripcion ok");
-        }else
-        {
-          Serial.println("fallo Suscripciión");
-        }
+          if(client.subscribe(root_topic_subscribe))
+          {
+            Serial.println("Suscripcion ok");
+          }
+          else
+          {
+            Serial.println("fallo Suscripciión");
+          }
       } 
       else 
       {
@@ -180,15 +180,17 @@ void reconnect() {
 //***       CALLBACK        ***    en formato char 
 //*****************************
 
-void callback(char* topic, byte* payload, unsigned int length){
-  String incoming = "";
-  Serial.print("Mensaje recibido desde -> ");
-  Serial.print(topic);
-  Serial.println("");
-  for (int i = 0; i < length; i++) {
-    incoming += (char)payload[i];
+  void callback(char* topic, byte* payload, unsigned int length)
+  {
+    String incoming = "";
+    Serial.print("Mensaje recibido desde: ");
+    Serial.print(topic);
+    Serial.println("");
+      for (int i = 0; i < length; i++) 
+      {
+        incoming += (char)payload[i];
+      }
+    incoming.trim();
+    Serial.println("Mensaje: " + incoming);
+  
   }
-  incoming.trim();
-  Serial.println("Mensaje -> " + incoming);
-
-}
