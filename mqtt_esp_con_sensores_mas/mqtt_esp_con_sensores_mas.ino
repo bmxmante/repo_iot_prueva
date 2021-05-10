@@ -12,8 +12,8 @@ const int trigPin = 2;
 const int echoPin = 5;
 
 long duration;
-int D_ant,Distance;
-String stringdistance,str,tem;
+int D_ant,Distance,val      ;
+String stringdistance,str,tem,incoming,incoming1;
 //String JSON;
 float  h_ant,t_ant;
 
@@ -95,9 +95,9 @@ void loop() {
        str = " Distancia: " + String (Distance) + " Cm "+"Humedad: "+ h +"% Temperatura: "+ t +"°C ";        
        tem = "Temperatura: "+ String (t) +"°C "; 
       // muestro en pantalla las variables
-        if(D_ant != Distance || h_ant != h || t_ant != t)
+        if(D_ant != Distance || h_ant != h || t_ant != t) //si hay algun cambio muestre en pantalla
           {
-           str.toCharArray(msg,57);
+           str.toCharArray(msg,57);                 //convierta str en arreclo char con 57 carateres 
            client.publish(root_topic_publish,msg);
            
            tem.toCharArray(msgtem,25);
@@ -190,7 +190,28 @@ void reconnect()
       {
         incoming += (char)payload[i];
       }
+      incoming1=incoming;
     incoming.trim();
     Serial.println("Mensaje: " + incoming);
+      casos();                                                    // llama la funcion y dependiendo la orden ejecuta
   
   }
+   void casos()                                                // funcion "funcion casos"
+      {
+          if (incoming1 == "led=on")
+             {
+//              digitalWrite(LED1, LOW);
+//              digitalWrite(LED, HIGH); 
+//              digitalWrite(VENT, LOW);
+                Serial.println("entro al led=on " ); 
+             }
+           if (incoming1 == "led=off")
+             {
+//              digitalWrite(LED1, HIGH);
+//              digitalWrite(LED, LOW);
+//              prenderventilador(34);
+                Serial.println("entro al led=off"); 
+             } 
+           Serial.println("entro pero no hizo nada :" ); 
+           Serial.println(incoming1); 
+      }  
