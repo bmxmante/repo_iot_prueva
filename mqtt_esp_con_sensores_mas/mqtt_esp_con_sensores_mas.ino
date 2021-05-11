@@ -4,6 +4,16 @@
 #include "DHT.h"
 #define DHTPIN 15
 #define DHTTYPE DHT11
+#define led1on  =1
+#define led1off  =1
+#define led2on  =2
+#define led2off  =2
+#define led3on  =3
+#define led3off  =3
+#define bombaon  =4
+#define bombaoff  =4
+#define venton  =5
+#define ventoff  =5
 
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -13,7 +23,7 @@ const int echoPin = 5;
 
 long duration;
 int D_ant,Distance,val      ;
-String stringdistance,str,tem,incoming,incoming1;
+String stringdistance,str,tem,incoming1;
 //String JSON;
 float  h_ant,t_ant;
 
@@ -212,6 +222,4 @@ void reconnect()
 //              prenderventilador(34);
                 Serial.println("entro al led=off"); 
              } 
-           Serial.println("entro pero no hizo nada :" ); 
-           Serial.println(incoming1); 
       }  
