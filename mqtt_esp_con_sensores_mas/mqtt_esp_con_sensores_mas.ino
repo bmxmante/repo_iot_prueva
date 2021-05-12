@@ -29,7 +29,7 @@ long duration;
 int D_ant,Distance,bandera      ;
 String stringdistance,str,tem,mens;
 //String JSON;
-float  h_ant,t_ant;
+float  t,h,h_ant,t_ant;
 
 //**************************************
 //*********** MQTT CONFIG **************
@@ -81,7 +81,7 @@ void setup_wifi();
 
 void loop() {
   
-  if (!client.connected()) 
+  if (!client.connected())  // si el cliente no se conecta entra
   {
     reconnect();
   }
@@ -92,8 +92,8 @@ void loop() {
       digitalWrite(trigPin, LOW);
       delayMicroseconds(10);
   
-      float h = dht.readHumidity();
-      float t = dht.readTemperature();
+       h = dht.readHumidity();
+       t = dht.readTemperature();
   
       // coloca el trigpin en alto durante 10 microsegundos
       digitalWrite(trigPin, HIGH);
@@ -108,14 +108,14 @@ void loop() {
   
        str = " Distancia: " + String (Distance) + " Cm "+"Humedad: "+ h +"% Temperatura: "+ t +"°C ";        
        tem = "Temperatura: "+ String (t) +"°C "; 
-      // muestro en pantalla las variables
+        // muestro en pantalla las variables
         if(D_ant != Distance || h_ant != h || t_ant != t) //si hay algun cambio muestre en pantalla
           {
            str.toCharArray(msg,57);                 //convierta str en arreclo char con 57 carateres 
            client.publish(root_topic_publish,msg);
            
-           tem.toCharArray(msgtem,25);
-           client.publish(root_topic_tem,msgtem);
+          //tem.toCharArray(msgtem,25);
+          //client.publish(root_topic_tem,msgtem);
           }
         D_ant=Distance;
         h_ant=h;
@@ -239,14 +239,34 @@ void reconnect()
              {
                 Serial.println("entro al f"); 
              } 
+           if (bandera == 1)
+             {
+                        tem = "Temperatura: "+ String (t) +"°C "; 
+                        // muestro en pantalla las variables
+                          if( t_ant != t)                                   //si hay algun cambio muestre en pantalla
+                            {
+                             tem.toCharArray(msgtem,25);                    //convierta str en arreglo char con 57 carateres 
+                             client.publish(root_topic_publish,msgtem);
+                             Serial.println("entro al if");
+                            }
+                          D_ant=Distance;
+                          h_ant=h;
+                          t_ant=t;
+                          delay(1000); 
+                 
+              
+                Serial.println("entro a bandera=1");
+                bandera=0;    
+             }   
            if (mens == "g")
              {
                 bandera=1;
                 Serial.println("entro al g"); 
              } 
-           else bandera=0;  
-           if (bandera == 1)
-             {
-                Serial.println("entro al f"); 
-             }   
+           else 
+           {
+            bandera=0; 
+            Serial.println("entro a bandera=0"); 
+           } 
+             
       }  
