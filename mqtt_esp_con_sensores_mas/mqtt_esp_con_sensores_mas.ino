@@ -4,16 +4,20 @@
 #include "DHT.h"
 #define DHTPIN 15
 #define DHTTYPE DHT11
-#define led1on  =1
-#define led1off  =1
-#define led2on  =2
-#define led2off  =2
-#define led3on  =3
-#define led3off  =3
-#define bombaon  =4
-#define bombaoff  =4
-#define venton  =5
-#define ventoff  =5
+
+//#define cuarto1on  =0
+//#define cuarto1off  =1
+//#define cuarto2on  =2
+//#define cuarto2off  =3
+//#define cuarto3on  =3
+//#define cuarto3off  =4
+//#define puertaon  =5
+//#define puertaoff  =6
+//#define garajeon  =7
+//#define garajeoff  =8
+//#define temperatura  =9
+//#define temperatura:  =10
+
 
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -22,8 +26,8 @@ const int trigPin = 2;
 const int echoPin = 5;
 
 long duration;
-int D_ant,Distance,val      ;
-String stringdistance,str,tem,incoming1;
+int D_ant,Distance,bandera      ;
+String stringdistance,str,tem,mens;
 //String JSON;
 float  h_ant,t_ant;
 
@@ -200,7 +204,7 @@ void reconnect()
       {
         incoming += (char)payload[i];
       }
-      incoming1=incoming;
+      mens=incoming;
     incoming.trim();
     Serial.println("Mensaje: " + incoming);
       casos();                                                    // llama la funcion y dependiendo la orden ejecuta
@@ -208,18 +212,41 @@ void reconnect()
   }
    void casos()                                                // funcion "funcion casos"
       {
-          if (incoming1 == "led=on")
+          if (mens == "a")
              {
 //              digitalWrite(LED1, LOW);
 //              digitalWrite(LED, HIGH); 
 //              digitalWrite(VENT, LOW);
-                Serial.println("entro al led=on " ); 
+                Serial.println("entro al a " ); 
              }
-           if (incoming1 == "led=off")
+           if (mens == "b")
              {
-//              digitalWrite(LED1, HIGH);
-//              digitalWrite(LED, LOW);
-//              prenderventilador(34);
-                Serial.println("entro al led=off"); 
+                Serial.println("entro al b"); 
              } 
+           if (mens == "c")
+             {
+                Serial.println("entro al c"); 
+             } 
+           if (mens == "d")
+             {
+                Serial.println("entro al d"); 
+             } 
+           if (mens == "e")
+             {
+                Serial.println("entro al e"); 
+             }   
+           if (mens == "f")
+             {
+                Serial.println("entro al f"); 
+             } 
+           if (mens == "g")
+             {
+                bandera=1;
+                Serial.println("entro al g"); 
+             } 
+           else bandera=0;  
+           if (bandera == 1)
+             {
+                Serial.println("entro al f"); 
+             }   
       }  
