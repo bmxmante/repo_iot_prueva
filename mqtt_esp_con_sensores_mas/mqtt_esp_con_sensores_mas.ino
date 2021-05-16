@@ -238,52 +238,50 @@ void reconnect()
       { 
           if (mens == "a0")
              {
-//              digitalWrite(LED1, LOW);
-              digitalWrite(LED, HIGH); 
-//              digitalWrite(VENT, LOW);
-                Serial.println("entro al a0 " ); 
+               digitalWrite(LED, HIGH); 
+                Serial.println("entro a apagar cuarto1 " ); 
              }
            if (mens == "a1")
              {
                digitalWrite(LED, LOW); 
-                Serial.println("entro al a1"); 
+                Serial.println("entro a prender cuarto1"); 
              } 
            if (mens == "b0")
              {
                 digitalWrite(LED1, HIGH); 
-                Serial.println("entro al b0"); 
+                Serial.println("entro a apagar cuarto2"); 
              } 
            if (mens == "b1")
              {
                 digitalWrite(LED1, LOW); 
-                Serial.println("entro al b1"); 
+                Serial.println("entro a prender cuarto2"); 
              } 
            if (mens == "c0")
              {
                 digitalWrite(VENT, HIGH); 
-                Serial.println("entro al b0"); 
+                Serial.println("entro a apagar ventilador"); 
              } 
            if (mens == "c1")
              {
                 digitalWrite(VENT, LOW); 
-                Serial.println("entro al b1"); 
+                Serial.println("entro a prender ventilador"); 
              }   
            if (mens == "d0")
              {
                 servo1.write(0);    // ubica el servo a 0 grados
                 delay(5000);  
-                Serial.println("entro al puerta cerrada"); 
+                Serial.println("entro a cerrar puerta"); 
              } 
            if (mens == "d1")
              {  
                 servo1.write(180);    // ubica el servo a 0 grados
                 delay(5000); 
-                Serial.println("entro al puerta abierta"); 
+                Serial.println("entro a abrir puerta"); 
              }     
            if (mens[0] == 't' && mens[1] == 'e' && mens[2] == 'm' && mens[3] == ':')
              {
-             mnum = ((mens[4]-48)*10) +mens[5]-48;                                 //guardo el numero para usarlo en la temperatura
-             Serial.println("entro al tem:");
+               mnum = ((mens[4]-48)*10) +mens[5]-48;                                 //guardo el numero para usarlo en la temperatura
+               Serial.println("entro al tem:");
                   if (t>=mnum) 
                      {
                       digitalWrite(VENT, LOW);          //prendo el ventilaror(trabaja con ceros)
