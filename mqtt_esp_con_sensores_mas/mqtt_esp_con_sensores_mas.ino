@@ -5,21 +5,6 @@
 #define DHTPIN 15
 #define DHTTYPE DHT11
 
-
-//#define cuarto1on  =0
-//#define cuarto1off  =1
-//#define cuarto2on  =2
-//#define cuarto2off  =3
-//#define cuarto3on  =3
-//#define cuarto3off  =4
-//#define puertaon  =5
-//#define puertaoff  =6
-//#define garajeon  =7
-//#define garajeoff  =8
-//#define temperatura  =9
-//#define temperatura:  =10
-
-
 DHT dht(DHTPIN, DHTTYPE);
 
 // defino variables 
@@ -27,11 +12,12 @@ const int trigPin = 2;
 const int echoPin = 5;
 
 long duration;
-int D_ant,Distance,bandera;
+int D_ant,Distance,bandera,mnum;
 int LED = 13; 
-int LED1 = 12;  
+int LED1 = 12;
+int VENT = 14;  
+
 String stringdistance,str,tem,mens;
-//String JSON;
 float  t,h,h_ant,t_ant;
 
 //**************************************
@@ -81,58 +67,66 @@ void setup_wifi();
     pinMode(echoPin, INPUT);  // defino como entrada el pin echo del ultrasoido
     pinMode(LED, OUTPUT);
     pinMode(LED1, OUTPUT);
+    pinMode(VENT, OUTPUT);
+    digitalWrite(LED, HIGH);
+    digitalWrite(LED1, HIGH);
+    digitalWrite(VENT, HIGH);
     dht.begin();   //inicio el modulo dht11
   }
 
-void loop() {
-  
-  if (!client.connected())  // si el cliente no se conecta entra
-  {
-    reconnect();
-  }
-
-    if (client.connected())
+void loop() 
+{
+    
+    if (!client.connected())  // si el cliente no se conecta entra
     {
-       // limpia los pines de trigpin 
-      digitalWrite(trigPin, LOW);
-      delayMicroseconds(10);
+      reconnect();
+    }
   
-       h = dht.readHumidity();
-       t = dht.readTemperature();
+      if (client.connected())
+      {
+         // limpia los pines de trigpin 
+        digitalWrite(trigPin, LOW);
+        delayMicroseconds(10);
+    
+         h = dht.readHumidity();
+         t = dht.readTemperature();
+    
+        // coloca el trigpin en alto durante 10 microsegundos
+        digitalWrite(trigPin, HIGH);
+        delayMicroseconds(10);
+        digitalWrite(trigPin, LOW);
+    
+        // lee el pin echo y debuelvo el tiempo de ida y vuelta de la onda en microsegundos
+        duration = pulseIn(echoPin, HIGH);
+    
+        // Calculo la distancio con esta ecuacion
+        Distance = duration * 0.034 / 2;
+    
+         str = " Distancia: " + String (Distance) + " Cm "+"Humedad: "+ h +"% Temperatura: "+ t +"°C ";        
+         tem = "Temperatura: "+ String (t) +"°C "; 
+          // muestro en pantalla las variables
+          if(D_ant != Distance || h_ant != h || t_ant != t) //si hay algun cambio muestre en pantalla
+            {
+             str.toCharArray(msg,57);                 //convierta str en arreclo char con 57 carateres 
+             client.publish(root_topic_publish,msg);
+             
+            //tem.toCharArray(msgtem,25);
+            //client.publish(root_topic_tem,msgtem);
+            }
+          D_ant=Distance;      //guarda el cmabio anterior
+          h_ant=h;
+          t_ant=t;
+          delay(1000);
+          casos();
+       }
+  client.loop();
   
-      // coloca el trigpin en alto durante 10 microsegundos
-      digitalWrite(trigPin, HIGH);
-      delayMicroseconds(10);
-      digitalWrite(trigPin, LOW);
-  
-      // lee el pin echo y debuelvo el tiempo de ida y vuelta de la onda en microsegundos
-      duration = pulseIn(echoPin, HIGH);
-  
-      // Calculo la distancio con esta ecuacion
-      Distance = duration * 0.034 / 2;
-  
-       str = " Distancia: " + String (Distance) + " Cm "+"Humedad: "+ h +"% Temperatura: "+ t +"°C ";        
-       tem = "Temperatura: "+ String (t) +"°C "; 
-        // muestro en pantalla las variables
-        if(D_ant != Distance || h_ant != h || t_ant != t) //si hay algun cambio muestre en pantalla
-          {
-           str.toCharArray(msg,57);                 //convierta str en arreclo char con 57 carateres 
-           client.publish(root_topic_publish,msg);
-           
-          //tem.toCharArray(msgtem,25);
-          //client.publish(root_topic_tem,msgtem);
-          }
-        D_ant=Distance;
-        h_ant=h;
-        t_ant=t;
-        delay(1000);
-     }
-client.loop();
+    
+}
 
-  //*****************************
+ //*****************************
   //***    CONEXION WIFI      ***
-  //*****************************  
-  }
+  //***************************** 
   void setup_wifi()
   {
     delay(10);
@@ -209,12 +203,13 @@ void reconnect()
       {
         incoming += (char)payload[i];
       }
-      mens=incoming;
+      mens=incoming;                                                //guardo en una variable para poder usarlo  como lectura
     incoming.trim();
     Serial.println("Mensaje: " + incoming);
       casos();                                                    // llama la funcion y dependiendo la orden ejecuta
   
   }
+  
    void casos()                                                // funcion "funcion casos"
       {
           if (mens == "a0")
@@ -239,42 +234,28 @@ void reconnect()
                 digitalWrite(LED1, LOW); 
                 Serial.println("entro al b1"); 
              } 
-           if (mens == "e")
+           if (mens == "c0")
              {
-                Serial.println("entro al e"); 
-             }   
-           if (mens == "f")
-             {
-                Serial.println("entro al f"); 
+                digitalWrite(VENT, HIGH); 
+                Serial.println("entro al b0"); 
              } 
-           if (bandera == 1)
+           if (mens == "c1")
              {
-                        tem = "Temperatura: "+ String (t) +"°C "; 
-                        // muestro en pantalla las variables
-                          if( t_ant != t)                                   //si hay algun cambio muestre en pantalla
-                            {
-                             tem.toCharArray(msgtem,25);                    //convierta str en arreglo char con 57 carateres 
-                             client.publish(root_topic_publish,msgtem);
-                             Serial.println("entro al if");
-                            }
-                          D_ant=Distance;
-                          h_ant=h;
-                          t_ant=t;
-                          delay(1000); 
-                 
-              
-                Serial.println("entro a bandera=1");
-                bandera=0;    
+                digitalWrite(VENT, LOW); 
+                Serial.println("entro al b1"); 
              }   
-           if (mens == "g")
+           if (mens[0] == 't' && mens[1] == 'e' && mens[2] == 'm' && mens[3] == ':')
              {
-                bandera=1;
-                Serial.println("entro al g"); 
-             } 
-           else 
-           {
-            bandera=0; 
-            Serial.println("entro a bandera=0"); 
-           } 
+             mnum = ((mens[4]-48)*10) +mens[5]-48;                                 //guardo el numero para usarlo en la temperatura
+             Serial.println("entro al tem:");
+                  if (t>=mnum) 
+                     {
+                      digitalWrite(VENT, LOW);          //prendo el ventilaror(trabaja con ceros)
+                      Serial.println("entro al mayor que");
+                      delay(1000); 
+                     } 
+                  else  digitalWrite(VENT, HIGH);  
+             }  
              
       }  
+      
