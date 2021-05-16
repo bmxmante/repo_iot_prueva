@@ -5,6 +5,7 @@
 #define DHTPIN 15
 #define DHTTYPE DHT11
 
+
 //#define cuarto1on  =0
 //#define cuarto1off  =1
 //#define cuarto2on  =2
@@ -26,7 +27,9 @@ const int trigPin = 2;
 const int echoPin = 5;
 
 long duration;
-int D_ant,Distance,bandera      ;
+int D_ant,Distance,bandera;
+int LED = 13; 
+int LED1 = 12;  
 String stringdistance,str,tem,mens;
 //String JSON;
 float  t,h,h_ant,t_ant;
@@ -76,6 +79,8 @@ void setup_wifi();
     client.setCallback(callback);
     pinMode(trigPin, OUTPUT); // defino como salidad el pin tring del ultrasoido
     pinMode(echoPin, INPUT);  // defino como entrada el pin echo del ultrasoido
+    pinMode(LED, OUTPUT);
+    pinMode(LED1, OUTPUT);
     dht.begin();   //inicio el modulo dht11
   }
 
@@ -212,24 +217,27 @@ void reconnect()
   }
    void casos()                                                // funcion "funcion casos"
       {
-          if (mens == "a")
+          if (mens == "a0")
              {
 //              digitalWrite(LED1, LOW);
-//              digitalWrite(LED, HIGH); 
+              digitalWrite(LED, HIGH); 
 //              digitalWrite(VENT, LOW);
-                Serial.println("entro al a " ); 
+                Serial.println("entro al a0 " ); 
              }
-           if (mens == "b")
+           if (mens == "a1")
              {
-                Serial.println("entro al b"); 
+               digitalWrite(LED, LOW); 
+                Serial.println("entro al a1"); 
              } 
-           if (mens == "c")
+           if (mens == "b0")
              {
-                Serial.println("entro al c"); 
+                digitalWrite(LED1, HIGH); 
+                Serial.println("entro al b0"); 
              } 
-           if (mens == "d")
+           if (mens == "b1")
              {
-                Serial.println("entro al d"); 
+                digitalWrite(LED1, LOW); 
+                Serial.println("entro al b1"); 
              } 
            if (mens == "e")
              {
