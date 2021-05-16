@@ -14,15 +14,16 @@ const int trigPin = 2;
 const int echoPin = 5;
 
 long duration;
-int D_ant,Distance,bandera,mnum;
+int D_ant,Distance,bandera,mnum,BANDERA;
 int LED = 13; 
 int LED1 = 12;
 int VENT = 14;  
 int LED_MAIL = 18;     //para prender el led indicador que se envio el mensaje
 int BOTON = 0;     //
-int SENSOR = 4;   //este si se activa envia un email
+int SENSOR = 4;   //este si se activa envia un emai
+int mnuman = 0;
 
-String stringdistance,str,tem,mens;
+String stringdistance,str,tem,mens,PUERTA,EMAIL;
 float  t,h,h_ant,t_ant;
 
 SMTPData datosSMTP;
@@ -52,7 +53,7 @@ const char* password =  "Kinkbmx.";
 //**************************************
 WiFiClient espClient;
 PubSubClient client(espClient);
-char msg[57];
+char msg[76];
 char msgtem[25];
 //long count=0;
 
@@ -111,13 +112,14 @@ void loop()
     
         // Calculo la distancio con esta ecuacion
         Distance = duration * 0.034 / 2;
-    
-         str = " Distancia: " + String (Distance) + " Cm "+"Humedad: "+ h +"% Temperatura: "+ t +"°C ";        
+        if(BOTON==1) PUERTA="ABIERTA";
+        else PUERTA="CERRADA";
+         str = " Distancia: " + String (Distance) + " Cm "+"Humedad: "+ h +"% Temperatura: "+ t +"°C puerta: "+ PUERTA;        
          tem = "Temperatura: "+ String (t) +"°C "; 
           // muestro en pantalla las variables
           if(D_ant != Distance || h_ant != h || t_ant != t) //si hay algun cambio muestre en pantalla
             {
-             str.toCharArray(msg,57);                 //convierta str en arreclo char con 57 carateres 
+             str.toCharArray(msg,76);                 //convierta str en arreclo char con 57 carateres 
              client.publish(root_topic_publish,msg);
              
             //tem.toCharArray(msgtem,25);
@@ -130,8 +132,6 @@ void loop()
           BOTON = digitalRead(SENSOR);
           if(BOTON == 1)
             {
-            Serial.print("Iniciando correo!!!");
-            delay(1000);
             correo();
             }
           casos();
@@ -272,23 +272,37 @@ void reconnect()
                       delay(1000); 
                      } 
                   else  digitalWrite(VENT, HIGH);  
+                  
+                if(mnum != mnuman)
+                {
+                  BANDERA = 1;       //si cambio la tempratura
+                  correo(); 
+                  BANDERA = 0; 
+                }
+                mnuman = mnum;                       //para que no entre si no cuando la temperatura cambie             
+                                         
              }  
              
       }  
 
 
        void correo()
-  {       
+  { 
+    Serial.print("Iniciando correo!!!");
+    delay(1000);
+    EMAIL="SE ACABA DE ABRIR LA PUERTA"; 
+     if(BANDERA==1) EMAIL="CAMBIO LA TEMPERATURA";   
      digitalWrite(LED_MAIL, HIGH); 
     datosSMTP.setLogin("smtp.gmail.com", 465, "labiot2021@gmail.com", "laboratorio2021");//Configuración del servidor de correo electrónico SMTP, host, puerto, cuenta y contraseña
     datosSMTP.setSender("DANIEL_ESP32", "labiot2021@gmail.com");     //coloca el nombre del que envia el mensaje y el correo electrónico
     datosSMTP.setPriority("High");// Establezca la prioridad o importancia del correo electrónico High, Normal, Low o 1 a 5 (1 es el más alto)
-    datosSMTP.setSubject("alerta de seguridad");               // Establecer el asunto
-    datosSMTP.setMessage("se acaba de abrir tu puerta", false);// escribe el contenido del correo
+    datosSMTP.setSubject("ALERTA DE SEGURIDAD");               // Establecer el asunto
+    datosSMTP.setMessage(EMAIL, false);// escribe el contenido del correo
     datosSMTP.addRecipient("danielrincon@unisangil.edu.co");   // aqui se envia el correo al destinatario     
     if (!MailClient.sendMail(datosSMTP))                       //si tiene datos comience a enviar correo electrónico.
     Serial.println("Error enviando el correo, " + MailClient.smtpErrorReason());
     datosSMTP.empty();           //Borrar todos los datos del objeto datosSMTP para liberar memoria
-      delay(5000);
+      delay(9000);
      digitalWrite(LED_MAIL, LOW);
+     BANDERA==0;
   } 
