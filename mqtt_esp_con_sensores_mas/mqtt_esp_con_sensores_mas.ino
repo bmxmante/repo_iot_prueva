@@ -2,6 +2,8 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include "DHT.h"
+#include "ESP32_MailClient.h"
+
 #define DHTPIN 15
 #define DHTTYPE DHT11
 
@@ -16,9 +18,14 @@ int D_ant,Distance,bandera,mnum;
 int LED = 13; 
 int LED1 = 12;
 int VENT = 14;  
+int LED_MAIL = 18;     //para prender el led indicador que se envio el mensaje
+int BOTON = 0;     //
+int SENSOR = 4;   //este si se activa envia un email
 
 String stringdistance,str,tem,mens;
 float  t,h,h_ant,t_ant;
+
+SMTPData datosSMTP;
 
 //**************************************
 //*********** MQTT CONFIG **************
@@ -57,7 +64,7 @@ void callback(char* topic, byte* payload, unsigned int length);
 void reconnect();
 void setup_wifi();
 
-  void setup() 
+    void setup() 
   {
     Serial.begin(9600);
     setup_wifi();
@@ -68,10 +75,13 @@ void setup_wifi();
     pinMode(LED, OUTPUT);
     pinMode(LED1, OUTPUT);
     pinMode(VENT, OUTPUT);
+    pinMode(LED_MAIL, OUTPUT);    
+    pinMode(SENSOR, INPUT);     //Pulsador o sensor como entrada   
     digitalWrite(LED, HIGH);
     digitalWrite(LED1, HIGH);
     digitalWrite(VENT, HIGH);
-    dht.begin();   //inicio el modulo dht11
+    digitalWrite(LED_MAIL, LOW);
+    dht.begin();             //inicio el modulo dht11
   }
 
 void loop() 
@@ -83,7 +93,7 @@ void loop()
     }
   
       if (client.connected())
-      {
+      { 
          // limpia los pines de trigpin 
         digitalWrite(trigPin, LOW);
         delayMicroseconds(10);
@@ -116,7 +126,14 @@ void loop()
           D_ant=Distance;      //guarda el cmabio anterior
           h_ant=h;
           t_ant=t;
-          delay(1000);
+          
+          BOTON = digitalRead(SENSOR);
+          if(BOTON == 1)
+            {
+            Serial.print("Iniciando correo!!!");
+            delay(1000);
+            correo();
+            }
           casos();
        }
   client.loop();
@@ -211,7 +228,7 @@ void reconnect()
   }
   
    void casos()                                                // funcion "funcion casos"
-      {
+      { 
           if (mens == "a0")
              {
 //              digitalWrite(LED1, LOW);
@@ -258,4 +275,20 @@ void reconnect()
              }  
              
       }  
-      
+
+
+       void correo()
+  {       
+     digitalWrite(LED_MAIL, HIGH); 
+    datosSMTP.setLogin("smtp.gmail.com", 465, "labiot2021@gmail.com", "laboratorio2021");//Configuración del servidor de correo electrónico SMTP, host, puerto, cuenta y contraseña
+    datosSMTP.setSender("DANIEL_ESP32", "labiot2021@gmail.com");     //coloca el nombre del que envia el mensaje y el correo electrónico
+    datosSMTP.setPriority("High");// Establezca la prioridad o importancia del correo electrónico High, Normal, Low o 1 a 5 (1 es el más alto)
+    datosSMTP.setSubject("alerta de seguridad");               // Establecer el asunto
+    datosSMTP.setMessage("se acaba de abrir tu puerta", false);// escribe el contenido del correo
+    datosSMTP.addRecipient("danielrincon@unisangil.edu.co");   // aqui se envia el correo al destinatario     
+    if (!MailClient.sendMail(datosSMTP))                       //si tiene datos comience a enviar correo electrónico.
+    Serial.println("Error enviando el correo, " + MailClient.smtpErrorReason());
+    datosSMTP.empty();           //Borrar todos los datos del objeto datosSMTP para liberar memoria
+      delay(5000);
+     digitalWrite(LED_MAIL, LOW);
+  } 
