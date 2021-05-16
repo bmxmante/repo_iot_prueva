@@ -1,27 +1,33 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
-#include "DHT.h"
-#include "ESP32_MailClient.h"
+#include <ESP32Servo.h>                    // incluye libreria de Servo para la placa
+#include "DHT.h"                      //incluyo la libretia para el sensor de temperatura
+#include "ESP32_MailClient.h"         //incluyo la libreria para enviar correos
 
 #define DHTPIN 15
 #define DHTTYPE DHT11
 
-DHT dht(DHTPIN, DHTTYPE);
-
-// defino variables 
+DHT dht(DHTPIN, DHTTYPE);             //creo objeto para el sensor de temperatura
+Servo servo1;                         // crea objeto para el servo
+// defino variables del sensor ultrasonico
 const int trigPin = 2;
 const int echoPin = 5;
+// defino variables del servomotor
+int PINSERVO = 26;                       // pin 34 conectado a señal del servo
+int PULSOMIN = 1000;                     // pulso minimo en microsegundos
+int PULSOMAX = 2000;                    // pulso maximo en microsegundos
 
+// defino demas variables
 long duration;
 int D_ant,Distance,bandera,mnum,BANDERA;
-int LED = 13; 
-int LED1 = 12;
-int VENT = 14;  
-int LED_MAIL = 18;     //para prender el led indicador que se envio el mensaje
-int BOTON = 0;     //
-int SENSOR = 4;   //este si se activa envia un emai
-int mnuman = 0;
+int LED = 13;                           //para prender el bombillo 1
+int LED1 = 12;                          //para prender el bombillo 2
+int VENT = 14;                          //para prender el ventilador
+int LED_MAIL = 18;                      //para prender el led indicador que se envio el mensaje
+int BOTON = 0;                          //una bandera
+int SENSOR = 4;                         //para leer la apertura de la puerta
+int mnuman = 0;                         //para almacenas el valor de temperatura naterior en entero
 
 String stringdistance,str,tem,mens,PUERTA,EMAIL;
 float  t,h,h_ant,t_ant;
@@ -71,6 +77,7 @@ void setup_wifi();
     setup_wifi();
     client.setServer(mqtt_server, mqtt_port); 
     client.setCallback(callback);
+    servo1.attach(PINSERVO, PULSOMIN, PULSOMAX);  // inicializacion de servo
     pinMode(trigPin, OUTPUT); // defino como salidad el pin tring del ultrasoido
     pinMode(echoPin, INPUT);  // defino como entrada el pin echo del ultrasoido
     pinMode(LED, OUTPUT);
@@ -261,6 +268,18 @@ void reconnect()
                 digitalWrite(VENT, LOW); 
                 Serial.println("entro al b1"); 
              }   
+           if (mens == "d0")
+             {
+                servo1.write(0);    // ubica el servo a 0 grados
+                delay(5000);  
+                Serial.println("entro al puerta cerrada"); 
+             } 
+           if (mens == "d1")
+             {  
+                servo1.write(180);    // ubica el servo a 0 grados
+                delay(5000); 
+                Serial.println("entro al puerta abierta"); 
+             }     
            if (mens[0] == 't' && mens[1] == 'e' && mens[2] == 'm' && mens[3] == ':')
              {
              mnum = ((mens[4]-48)*10) +mens[5]-48;                                 //guardo el numero para usarlo en la temperatura
