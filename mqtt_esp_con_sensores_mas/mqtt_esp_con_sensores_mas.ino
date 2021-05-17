@@ -28,8 +28,9 @@ int LED_MAIL = 18;                      //para prender el led indicador que se e
 int BOTON = 0;                          //una bandera
 int SENSOR = 4;                         //para leer la apertura de la puerta
 int mnuman = 0;                         //para almacenas el valor de temperatura naterior en entero
+int cont = 50 ;
 
-String stringdistance,str,tem,mens,PUERTA,EMAIL;
+String stringdistance,str,tem,hum,mens,PUERTA,EMAIL;
 float  t,h,h_ant,t_ant;
 
 SMTPData datosSMTP;
@@ -44,6 +45,7 @@ const char *mqtt_pass = "ZqpHVjEV84O48RS";
 const char *root_topic_subscribe = "hF39Jx1E462loPz/input";
 const char *root_topic_publish = "hF39Jx1E462loPz/output";
 const char *root_topic_tem = "hF39Jx1E462loPz/tem";
+const char *root_topic_hum = "hF39Jx1E462loPz/hum";
 
 
 //**************************************
@@ -61,6 +63,7 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 char msg[76];
 char msgtem[25];
+char msghum[25];
 //long count=0;
 
 
@@ -123,14 +126,21 @@ void loop()
         else PUERTA="CERRADA";
          str = " Distancia: " + String (Distance) + " Cm "+"Humedad: "+ h +"% Temperatura: "+ t +"°C puerta: "+ PUERTA;        
          tem = "Temperatura: "+ String (t) +"°C "; 
+         hum = "Humedad: "+ String (h) +"% "; 
           // muestro en pantalla las variables
           if(D_ant != Distance || h_ant != h || t_ant != t) //si hay algun cambio muestre en pantalla
             {
              str.toCharArray(msg,76);                 //convierta str en arreclo char con 57 carateres 
              client.publish(root_topic_publish,msg);
-             
-            //tem.toCharArray(msgtem,25);
-            //client.publish(root_topic_tem,msgtem);
+               if(cont >= 50)
+                 {
+                  tem.toCharArray(msgtem,25);
+                  client.publish(root_topic_tem,msgtem);
+                  hum.toCharArray(msghum,25);
+                  client.publish(root_topic_hum,msghum);
+                  cont==0;
+                 }
+                else cont++;
             }
           D_ant=Distance;      //guarda el cmabio anterior
           h_ant=h;
@@ -275,6 +285,7 @@ void reconnect()
            if (mens == "d1")
              {  
                 servo1.write(180);    // ubica el servo a 0 grados
+                //correo();
                 delay(5000); 
                 Serial.println("entro a abrir puerta"); 
              }     
