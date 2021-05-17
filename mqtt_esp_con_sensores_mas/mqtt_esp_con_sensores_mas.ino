@@ -28,7 +28,7 @@ int LED_MAIL = 18;                      //para prender el led indicador que se e
 int BOTON = 0;                          //una bandera
 int SENSOR = 4;                         //para leer la apertura de la puerta
 int mnuman = 0;                         //para almacenas el valor de temperatura naterior en entero
-int cont = 50 ;
+int cont = 500 ;
 
 String stringdistance,str,tem,hum,mens,PUERTA,EMAIL;
 float  t,h,h_ant,t_ant;
@@ -131,17 +131,17 @@ void loop()
           if(D_ant != Distance || h_ant != h || t_ant != t) //si hay algun cambio muestre en pantalla
             {
              str.toCharArray(msg,76);                 //convierta str en arreclo char con 57 carateres 
-             client.publish(root_topic_publish,msg);
-               if(cont >= 50)
+             client.publish(root_topic_publish,msg);  
+            }
+            if(cont > 500)
                  {
                   tem.toCharArray(msgtem,25);
                   client.publish(root_topic_tem,msgtem);
                   hum.toCharArray(msghum,25);
                   client.publish(root_topic_hum,msghum);
-                  cont==0;
+                  cont = 0;
                  }
                 else cont++;
-            }
           D_ant=Distance;      //guarda el cmabio anterior
           h_ant=h;
           t_ant=t;
@@ -249,7 +249,7 @@ void reconnect()
           if (mens == "a0")
              {
                digitalWrite(LED, HIGH); 
-                Serial.println("entro a apagar cuarto1 " ); 
+                Serial.println("entro a apagar cuarto1 " );
              }
            if (mens == "a1")
              {
