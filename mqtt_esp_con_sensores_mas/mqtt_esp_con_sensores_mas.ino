@@ -246,43 +246,43 @@ void reconnect()
   
    void casos()                                                // funcion "funcion casos"
       { 
-          if (mens == "a0")
+          if (mens == "a0") //if (mens == "cuarto1off")
              {
                digitalWrite(LED, HIGH); 
                 Serial.println("entro a apagar cuarto1 " );
              }
-           if (mens == "a1")
+           if (mens == "a1") //if (mens == "cuarto1on")
              {
                digitalWrite(LED, LOW); 
                 Serial.println("entro a prender cuarto1"); 
              } 
-           if (mens == "b0")
+           if (mens == "b0") //if (mens == "cuarto2off")
              {
                 digitalWrite(LED1, HIGH); 
                 Serial.println("entro a apagar cuarto2"); 
              } 
-           if (mens == "b1")
+           if (mens == "b1") //if (mens == "cuarto2on")
              {
                 digitalWrite(LED1, LOW); 
                 Serial.println("entro a prender cuarto2"); 
              } 
-           if (mens == "c0")
+           if (mens == "c0") //if (mens == "ventiladoroff")
              {
                 digitalWrite(VENT, HIGH); 
                 Serial.println("entro a apagar ventilador"); 
              } 
-           if (mens == "c1")
+           if (mens == "c1")  //if (mens == "ventiladoron")
              {
                 digitalWrite(VENT, LOW); 
                 Serial.println("entro a prender ventilador"); 
              }   
-           if (mens == "d0")
+           if (mens == "d0")  //if (mens == "cerrar")
              {
                 servo1.write(0);    // ubica el servo a 0 grados
                 delay(5000);  
                 Serial.println("entro a cerrar puerta"); 
              } 
-           if (mens == "d1")
+           if (mens == "d1") //if (mens == "abrir")
              {  
                 servo1.write(180);    // ubica el servo a 0 grados
                 //correo();
