@@ -246,6 +246,7 @@ void reconnect()
   
    void casos()                                                // funcion "funcion casos"
       { 
+          //estos if son para prender y apagar el bombillo de la abitacion # 1
           if (mens == "a0") //if (mens == "cuarto1off")
              {
                digitalWrite(LED, HIGH); 
@@ -256,6 +257,7 @@ void reconnect()
                digitalWrite(LED, LOW); 
                 //Serial.println("entro a prender cuarto1"); 
              } 
+           //estos if son para prender y apagar el bombillo de la abitacion # 2  
            if (mens == "b0") //if (mens == "cuarto2off")
              {
                 digitalWrite(LED1, HIGH); 
@@ -266,6 +268,7 @@ void reconnect()
                 digitalWrite(LED1, LOW); 
                // Serial.println("entro a prender cuarto2"); 
              } 
+           //estos if son para prender y apagar el ventilador  
            if (mens == "c0") //if (mens == "ventiladoroff")
              {
                 digitalWrite(VENT, HIGH); 
@@ -275,7 +278,8 @@ void reconnect()
              {
                 digitalWrite(VENT, LOW); 
                // Serial.println("entro a prender ventilador"); 
-             }   
+             } 
+            //estos if son para cerrar o abrir la puerta principal de la casa   
            if (mens == "d0")  //if (mens == "cerrar")
              {
                 servo1.write(0);    // ubica el servo a 0 grados
@@ -285,10 +289,11 @@ void reconnect()
            if (mens == "d1") //if (mens == "abrir")
              {  
                 servo1.write(180);    // ubica el servo a 0 grados
-                //correo();
+                correo();
                 delay(5000); 
                 //Serial.println("entro a abrir puerta"); 
              }     
+           //este if es para cuando el cliente desea poner una temeratura para que se prende el ventilador
            if (mens[0] == 't' && mens[1] == 'e' && mens[2] == 'm' && mens[3] == ':')
              {
                mnum = ((mens[4]-48)*10) +mens[5]-48;                //guardo el numero para usarlo en la temperatura
