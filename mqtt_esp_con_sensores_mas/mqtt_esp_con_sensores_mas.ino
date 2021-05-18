@@ -319,18 +319,18 @@ void reconnect()
     Serial.print("Iniciando correo!!!");
     delay(1000);
     EMAIL="SE ACABA DE ABRIR LA PUERTA"; 
-     if(BANDERA==1) EMAIL="CAMBIO LA TEMPERATURA";   
-     digitalWrite(LED_MAIL, HIGH); 
+     if(BANDERA==1) EMAIL="CAMBIO LA TEMPERATURA";          //este if es para cuando se esta cambiando la temperaturo y no abriendo la puerta
+     digitalWrite(LED_MAIL, HIGH);                         //prendo el led indicando que se esta enviendo un email
     datosSMTP.setLogin("smtp.gmail.com", 465, "labiot2021@gmail.com", "laboratorio2021");//Configuración del servidor de correo electrónico SMTP, host, puerto, cuenta y contraseña
     datosSMTP.setSender("DANIEL_ESP32", "labiot2021@gmail.com");     //coloca el nombre del que envia el mensaje y el correo electrónico
-    datosSMTP.setPriority("High");// Establezca la prioridad o importancia del correo electrónico High, Normal, Low o 1 a 5 (1 es el más alto)
+    datosSMTP.setPriority("High");                            // Establezca la prioridad o importancia del correo electrónico High, Normal, Low o 1 a 5 (1 es el más alto)
     datosSMTP.setSubject("ALERTA DE SEGURIDAD");               // Establecer el asunto
-    datosSMTP.setMessage(EMAIL, false);// escribe el contenido del correo
+    datosSMTP.setMessage(EMAIL, false);                       // escribe el contenido del correo
     datosSMTP.addRecipient("danielrincon@unisangil.edu.co");   // aqui se envia el correo al destinatario     
     if (!MailClient.sendMail(datosSMTP))                       //si tiene datos comience a enviar correo electrónico.
     Serial.println("Error enviando el correo, " + MailClient.smtpErrorReason());
     datosSMTP.empty();           //Borrar todos los datos del objeto datosSMTP para liberar memoria
-      delay(9000);
-     digitalWrite(LED_MAIL, LOW);
+      delay(9000);                 // esperao 9min a que se envie el mensaje
+     digitalWrite(LED_MAIL, LOW);    //apago led despues de enviar el mensaje
      BANDERA==0;
   } 
