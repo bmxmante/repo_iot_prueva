@@ -11,7 +11,7 @@
 DHT dht(DHTPIN, DHTTYPE);             //creo objeto para el sensor de temperatura
 Servo servo1;                         // crea objeto para el servo
 // defino variables del sensor ultrasonico
-const int trigPin = 2;
+const int trigPin = 2;               // son las entradas para el sensor de distancia
 const int echoPin = 5;
 // defino variables del servomotor
 int PINSERVO = 26;                       // pin 34 conectado a señal del servo
@@ -88,11 +88,11 @@ void setup_wifi();
     pinMode(VENT, OUTPUT);
     pinMode(LED_MAIL, OUTPUT);    
     pinMode(SENSOR, INPUT);     //Pulsador o sensor como entrada   
-    digitalWrite(LED, HIGH);
+    digitalWrite(LED, HIGH);     //les doy un alto iniciando para que no se prendan los relay ya que prenden con ceros
     digitalWrite(LED1, HIGH);
     digitalWrite(VENT, HIGH);
     digitalWrite(LED_MAIL, LOW);
-    dht.begin();             //inicio el modulo dht11
+    dht.begin();                    //inicio el modulo dht11
   }
 
 void loop() 
@@ -109,8 +109,8 @@ void loop()
         digitalWrite(trigPin, LOW);
         delayMicroseconds(10);
     
-         h = dht.readHumidity();
-         t = dht.readTemperature();
+         h = dht.readHumidity();          //leo la humedad del sensor y lo guardo en h
+         t = dht.readTemperature();        //leo la temperatura del sensor y lo guardo en t
     
         // coloca el trigpin en alto durante 10 microsegundos
         digitalWrite(trigPin, HIGH);
@@ -122,7 +122,7 @@ void loop()
     
         // Calculo la distancio con esta ecuacion
         Distance = duration * 0.034 / 2;
-        if(BOTON==1) PUERTA="ABIERTA";
+        if(BOTON==1) PUERTA="ABIERTA";  // son para escribir si esta abierta o cerrada la puerta segun el caso
         else PUERTA="CERRADA";
          str = " Distancia: " + String (Distance) + " Cm "+"Humedad: "+ h +"% Temperatura: "+ t +"°C puerta: "+ PUERTA;        
          tem = "Temperatura: "+ String (t) +"°C "; 
@@ -133,7 +133,7 @@ void loop()
              str.toCharArray(msg,76);                 //convierta str en arreclo char con 57 carateres 
              client.publish(root_topic_publish,msg);  
             }
-            if(cont > 500)
+            if(cont > 500)    // esto es para masomenos contar 25segundos para mostrar el valor de temperatura y humedad
                  {
                   tem.toCharArray(msgtem,25);
                   client.publish(root_topic_tem,msgtem);
@@ -142,14 +142,14 @@ void loop()
                   cont = 0;
                  }
                 else cont++;
-          D_ant=Distance;      //guarda el cmabio anterior
+          D_ant=Distance;      //guarda el cmabio anterior para la funcion si cambia la variables muestra
           h_ant=h;
           t_ant=t;
           
-          BOTON = digitalRead(SENSOR);
+          BOTON = digitalRead(SENSOR);  //lee si esta abierta la puerta
           if(BOTON == 1)
             {
-            correo();
+            correo();                   //se llama a correo para decir que esta abierta la puerta
             }
           casos();
        }
