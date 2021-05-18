@@ -249,65 +249,65 @@ void reconnect()
           if (mens == "a0") //if (mens == "cuarto1off")
              {
                digitalWrite(LED, HIGH); 
-                Serial.println("entro a apagar cuarto1 " );
+                //Serial.println("entro a apagar cuarto1 " );
              }
            if (mens == "a1") //if (mens == "cuarto1on")
              {
                digitalWrite(LED, LOW); 
-                Serial.println("entro a prender cuarto1"); 
+                //Serial.println("entro a prender cuarto1"); 
              } 
            if (mens == "b0") //if (mens == "cuarto2off")
              {
                 digitalWrite(LED1, HIGH); 
-                Serial.println("entro a apagar cuarto2"); 
+                //Serial.println("entro a apagar cuarto2"); 
              } 
            if (mens == "b1") //if (mens == "cuarto2on")
              {
                 digitalWrite(LED1, LOW); 
-                Serial.println("entro a prender cuarto2"); 
+               // Serial.println("entro a prender cuarto2"); 
              } 
            if (mens == "c0") //if (mens == "ventiladoroff")
              {
                 digitalWrite(VENT, HIGH); 
-                Serial.println("entro a apagar ventilador"); 
+               // Serial.println("entro a apagar ventilador"); 
              } 
            if (mens == "c1")  //if (mens == "ventiladoron")
              {
                 digitalWrite(VENT, LOW); 
-                Serial.println("entro a prender ventilador"); 
+               // Serial.println("entro a prender ventilador"); 
              }   
            if (mens == "d0")  //if (mens == "cerrar")
              {
                 servo1.write(0);    // ubica el servo a 0 grados
                 delay(5000);  
-                Serial.println("entro a cerrar puerta"); 
+               // Serial.println("entro a cerrar puerta"); 
              } 
            if (mens == "d1") //if (mens == "abrir")
              {  
                 servo1.write(180);    // ubica el servo a 0 grados
                 //correo();
                 delay(5000); 
-                Serial.println("entro a abrir puerta"); 
+                //Serial.println("entro a abrir puerta"); 
              }     
            if (mens[0] == 't' && mens[1] == 'e' && mens[2] == 'm' && mens[3] == ':')
              {
-               mnum = ((mens[4]-48)*10) +mens[5]-48;                                 //guardo el numero para usarlo en la temperatura
+               mnum = ((mens[4]-48)*10) +mens[5]-48;                //guardo el numero para usarlo en la temperatura
                Serial.println("entro al tem:");
-                  if (t>=mnum) 
+                  if (t>=mnum)                                      //si la tempratura es mayor o igual a la designada por el usuario entro
                      {
-                      digitalWrite(VENT, LOW);          //prendo el ventilaror(trabaja con ceros)
-                      Serial.println("entro al mayor que");
+                      digitalWrite(VENT, LOW);                       //prendo el ventilaror(trabaja con ceros)
+                      //Serial.println("entro al mayor que");
                       delay(1000); 
                      } 
                   else  digitalWrite(VENT, HIGH);  
                   
-                if(mnum != mnuman)
+                if(mnum != mnuman)             //si cambio la tempratura
                 {
-                  BANDERA = 1;       //si cambio la tempratura
+                  BANDERA = 1;                 //uso esta bandera para indicar que es para la temperatura
                   correo(); 
-                  BANDERA = 0; 
+                  BANDERA = 0;                //reseteo la bandera 
                 }
-                mnuman = mnum;                       //para que no entre si no cuando la temperatura cambie             
+                mnuman = mnum;                //para que no entre si no cuando la temperatura cambie             
                                          
              }  
              
