@@ -15,7 +15,7 @@ const int trigPin = 2;               // son las entradas para el sensor de dista
 const int echoPin = 5;
 // defino variables del servomotor
 int PINSERVO = 26;                       // pin 34 conectado a señal del servo
-int PULSOMIN = 1000;                     // pulso minimo en microsegundos
+int PULSOMIN = 900;                     // pulso minimo en microsegundos
 int PULSOMAX = 2000;                    // pulso maximo en microsegundos
 
 // defino demas variables
@@ -29,6 +29,7 @@ int BOTON = 0;                          //una bandera
 int SENSOR = 4;                         //para leer la apertura de la puerta
 int mnuman = 0;                         //para almacenas el valor de temperatura naterior en entero
 int cont = 500 ;
+int BANDERA1 = 0;
 
 String stringdistance,str,tem,hum,mens,PUERTA,EMAIL;
 float  t,h,h_ant,t_ant;
@@ -280,17 +281,21 @@ void reconnect()
                // Serial.println("entro a prender ventilador"); 
              } 
             //estos if son para cerrar o abrir la puerta principal de la casa   
-           if (mens == "d0")  //if (mens == "cerrar")
+           if (mens == "d0"&& BANDERA1 > 0)  //if (mens == "cerrar")
              {
                 servo1.write(0);    // ubica el servo a 0 grados
-                delay(5000);  
-               // Serial.println("entro a cerrar puerta"); 
+                delay(200);   
+                BANDERA1 = 0;
+                Serial.println("entro a cerrar puerta"); 
              } 
-           if (mens == "d1") //if (mens == "abrir")
+             
+           if (mens == "d1" && BANDERA1 < 1) //if (mens == "abrir")
              {  
                 servo1.write(180);    // ubica el servo a 0 grados
-                correo();
-                delay(5000); 
+                  //correo(); 
+                  BANDERA1++;                //reseteo la bandera 
+                  Serial.println("entro a abrir puerta"); 
+                delay(200); 
                 //Serial.println("entro a abrir puerta"); 
              }     
            //este if es para cuando el cliente desea poner una temeratura para que se prende el ventilador
