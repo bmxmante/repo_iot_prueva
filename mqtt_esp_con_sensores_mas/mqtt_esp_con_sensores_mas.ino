@@ -27,7 +27,7 @@ int VENT = 14;                          //para prender el ventilador
 int LED_MAIL = 18;                      //para prender el led indicador que se envio el mensaje
 int BOTON = 0;                          //una bandera
 int SENSOR = 4;                         //para leer la apertura de la puerta
-int mnuman = 0;                         //para almacenas el valor de temperatura naterior en entero
+int mnuman = 0;                         //para almacenas el valor de temperatura aterior en entero
 int cont = 500 ;
 int BANDERA1 = 0;
 
@@ -93,25 +93,25 @@ void setup_wifi();
     digitalWrite(LED1, HIGH);
     digitalWrite(VENT, HIGH);
     digitalWrite(LED_MAIL, LOW);
-    dht.begin();                    //inicio el modulo dht11
+    dht.begin();                        //inicio el modulo dht11
   }
 
 void loop() 
 {
     
-    if (!client.connected())  // si el cliente no se conecta entra
+    if (!client.connected())         // si el cliente no se conecta entra
     {
       reconnect();
     }
   
       if (client.connected())
       { 
+         h = dht.readHumidity();          //leo la humedad del sensor y lo guardo en h
+         t = dht.readTemperature();        //leo la temperatura del sensor y lo guardo en t
+         
          // limpia los pines de trigpin 
         digitalWrite(trigPin, LOW);
         delayMicroseconds(10);
-    
-         h = dht.readHumidity();          //leo la humedad del sensor y lo guardo en h
-         t = dht.readTemperature();        //leo la temperatura del sensor y lo guardo en t
     
         // coloca el trigpin en alto durante 10 microsegundos
         digitalWrite(trigPin, HIGH);
@@ -143,7 +143,7 @@ void loop()
                   cont = 0;
                  }
                 else cont++;
-          D_ant=Distance;      //guarda el cmabio anterior para la funcion si cambia la variables muestra
+          D_ant=Distance;      //guarda el cambio anterior para la funcion si cambia la variables muestra
           h_ant=h;
           t_ant=t;
           
@@ -238,10 +238,10 @@ void reconnect()
       {
         incoming += (char)payload[i];
       }
-      mens=incoming;                                                //guardo en una variable para poder usarlo  como lectura
+      mens=incoming;                                           //guardo en una variable para poder usarlo  como lectura
     incoming.trim();
     Serial.println("Mensaje: " + incoming);
-      casos();                                                    // llama la funcion y dependiendo la orden ejecuta
+      casos();                                                 // llama la funcion y dependiendo la orden ejecuta
   
   }
   
@@ -292,7 +292,7 @@ void reconnect()
            if (mens == "d1" && BANDERA1 < 1) //if (mens == "abrir")
              {  
                 servo1.write(180);    // ubica el servo a 0 grados
-                  //correo(); 
+                  correo(); 
                   BANDERA1++;                //reseteo la bandera 
                   Serial.println("entro a abrir puerta"); 
                 delay(200); 
