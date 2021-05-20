@@ -37,8 +37,49 @@ III. OBJETIVOS ESPESIFICOS
 
 •	Mostrar las caracteristicas y funcionalidades del protocolo MQTT en la implementación de la conexión
 
+•	Diseñe e implemente un sistema de domótico de apertura de una puerta, control de temperatura y notificación por medio de correo, la siguiente figura expone el sistema en general
 
-IV.  CODIGO PROGRAMA 
+•	Crear un bróker MQTT para centralizar la información, implementa, el bróker como se explicó en clase (https://ioticos.org/mqtt)
+
+• Se debe disponer de los siguientes tópicos:
+
+•	Topic_raiz: Debe informar toda la información del sistema temperatura,
+
+•	humedad y si la puerta está abierta o cerrada
+
+•	Temperatura: Información de la temperatura actual actualizada cada 25 segundos, cuando se publique desde el bróker a este topic se debe enviar la temperatura para configura el sistema de control de temperatura
+
+•	Humedad: Información de la humedad actual actualizada cada 25 segundos
+
+•	Puerta: Información del estado de puerta cerrada o abierta, cuando se publique desde el bróker a este topic (Cerrar o Abrir) Se debe accionar el motor(servomotor) y simular(maqueta) la apertura o cerrar la puerta
+
+
+
+
+
+
+
+
+
+
+IV.  MATERIALES
+
+✓ Multímetro Digital
+
+✓ Fuente de alimentación
+
+✓ Protoboard
+
+✓ Jumpers Macho a Macho y Macho a           Hembra ( o un metro de cable utp)
+
+✓ Modulo ESP 01 (esp8266)
+
+✓ Arduino uno (o ESP 32 u otro microcontrolador)
+
+✓ Demas materiales necesarios
+PROCE
+
+V.  CODIGO PROGRAMA 
 
 # incluir  < Arduino.h >
 # incluye  < WiFi.h >
@@ -389,7 +430,7 @@ anular  reconectar ()
 
 
 
-V. PROCEDIMIENTO
+VI. PROCEDIMIENTO
 
 •	Agregamos una librería en Arduino para que pueda haber conexión entre el microcontrolador y la programación en Arduino
 
@@ -413,7 +454,7 @@ V. PROCEDIMIENTO
 
 •	Defino unas variables enteras y una long, en el caso de la variable long que trabaja con 8 bits permite almacenar datos grandes de información, esta variables la denominamos “DURATION”, permite guardar el tiempo de ida y vuelta del sonido emitido por el sensor, las variable “D_ant, H_ant, T_ant”, van almacenar los varoles anteriores de la temperatura, distancia y movimiento, las variables “bandera y BANDERA”, son banderas que se activan con unos procesos determinados, variable “MNUM” permite almacenar la temperatura que desea el usuario, variable “LED1 Y LED” están ubicados en los puertos 12 y 13 respectivamente, estos permiten controlar los focos, variable “VENT” ubicado en el puerto 14, permite controlar el encendido y apagado del sistema de enfriamiento, variable “LED_MAIL” indica si se está enviando información al correo, variable “BOTON” lo usamos para escribir el estado de la puerta y se inicializa en 0, variable “SENSOR” esta permite leer el estado de la puerta y se encuentra ubicado en el puerto 4, variable “MNUMAN” la inicializamos en 0, permite almacenar los datos pasados recogidos por la variable “MNUM”, variable “CONT” lo inicializamos en 500, esta permite mostrar las variables de temperatura y humedad, variable “BANDERA1” lo inicializamos en 0, esta permite averiguar en que estado se encuentra la puerta para controlar el servomotor.
 
-•	Se crean las variables string, las cuales son cadenas de caracteres, variable “str, temp, hum” permite almacenar los datos obtenidos por todas la variables, “MENS” se utiliza para almacenar el “string” en otra variable, y poder leerlo, variable “PUERTA Y EMAIL” permiten almacenar en caracteres en que estado se encuentra la puerta.
+•	Se crean las variables string, las cuales son cadenas de caracteres, variable “str, tem, hum” permite almacenar los datos obtenidos por todas la variables, “MENS” se utiliza para almacenar el “string” en otra variable, y poder leerlo, variable “PUERTA Y EMAIL” permiten almacenar en caracteres en que estado se encuentra la puerta.
 
 •	Se crean variables “float” que permiten almacenar números decimales, variable “t, h” se utiliza para almacenar los datos de humedad y temperatura.
 
@@ -433,4 +474,25 @@ V. PROCEDIMIENTO
 
 •	En setup, inicializo el puerto serial, el servomotor, el modulo DHT11, y definimos unos puertos de entrada y salida, y le ingresamos variables de “alto y bajo” a unas variables (bombillos, ventilador, etc.)
 
-•	 
+•	 En el loop, verifico si el cliente esta conectado, de lo contrario lo vinculo, si se encuentra conectado, leo los sensores de temperatura y humedad, y envio una señal por el ultrasónico “Alto y Bajo”, por medio de una ecuación calculo la distancia que recorre el sonido al salir y entrar al sensor, verifico en que estado se encuentra la puerta, si la temperatura, distancia, e humedad son distintas a los datos recolectados con anterioridad de los mismos, si esto ocurre se mostrara en el tópico “input”, ahora usaremos un “if” para contar 500 interacciones en un rango de 25 segundos, para mostrar la temperatura y humedad en los topicos “tem y hum”, posteriormente se guarda el cambio anterior en otras variables, se lee el estado de la variable sensor, para conocer si la puerta se encuentra cerrada o abierta, si se encuentra abierta enviara un correo notificando que se abrió la puerta, reviso la función casos, para determinar lo que el cliente inserto en el sistema.
+
+•	En la función callback, se leera los datos que se envían de los topicos, y se muestran los datos en el puerto serial, y se llama la función casos.
+
+•	En la función casos, se encuentra 9 posibles situaciones, en los cuales se encuentran (prender y apagar el led1, prender y apagar el led, prender y apagar el ventilador, abrir y cerrar las puertas y control de temperatura)
+
+•	En la función correo, escribimos que se enviara una notificación por correo electronico, donde se encenderá un led indicando el envio de dicha información, configuramos el servidor de correo electronico “SMTP” le indicamos por que puerto trabajara, se inscribe la cuenta y contraseña, se ingresara los datos del usuario que envia el correo, y le indicamos como mensaje de importancia, se establece el asunto del correo, y se ingresara el correo del destinatario, y el programa redactara el contenido del correo, se borran los datos del objeto, de la variable datosSMTP para liberar memoria, se espera en un rango de tiempo de 9 minutos hasta que se envie el mensaje, reviso el led para verificar si ya se envio la información e inicializo la bandera con 0.  
+
+VII. CONCLUSIONES
+
+•	Un aspecto importante a tener en cuenta de los dispositivos IoT no es solamente el poder enviar datos al Cloud/Servidor, sino también el poder comunicarse con el dispositivo, definitivamente la bidireccionalidad de este servidor es muy útil, uno de los beneficios de MQT, es crear un modelo brokered, donde el cliente abre una conexión de salida al bróker, aunque el dispositivo esté actuando como Publisher o subscriber.
+
+•	Con el campo del IOT se pueden imaginar muchas posibilidades en el uso de dispositivos electronicos, como para monitorizar sistemas desde cualquier parte del mundo, poder abrir puertas, prender cualquier aparato electrónico y se abre un mundo de posibilidades y servicios que se pueden ofrecer.
+
+•	Gracias a este proyecto conocimos, que es posible controlar cualquier artefacto mediante internet y las diferentes herramientas de IOT
+
+•	Se puede observar que, si no se le suministra una fuente que entregue la potencia que se necesita para el módulo de relés, y el servomotor, no funcionara de manera correcta, para que funcione de una manera correcta, se necesita una potencia mayor a la que entrega el microcontrolador. 
+
+
+
+
+
