@@ -21,9 +21,9 @@ int PULSOMAX = 2000;                    // pulso maximo en microsegundos
 // defino demas variables
 long duration;
 int D_ant,Distance,bandera,mnum,BANDERA;
-int LED = 13;                           //para prender el bombillo 1
+int LED = 14;                           //para prender el bombillo 1
 int LED1 = 12;                          //para prender el bombillo 2
-int VENT = 14;                          //para prender el ventilador
+int VENT = 13;                          //para prender el ventilador
 int LED_MAIL = 18;                      //para prender el led indicador que se envio el mensaje
 int BOTON ;                          //una bandera
 int SENSOR = 4;                         //para leer la apertura de la puerta
@@ -46,7 +46,9 @@ const char *mqtt_pass = "ZqpHVjEV84O48RS";
 const char *root_topic_subscribe = "hF39Jx1E462loPz/input";
 const char *root_topic_publish = "hF39Jx1E462loPz/output";
 const char *root_topic_tem = "hF39Jx1E462loPz/tem";
+const char *root_topic_tempubli = "hF39Jx1E462loPz/tempubli";
 const char *root_topic_hum = "hF39Jx1E462loPz/hum";
+const char *root_topic_humpubli = "hF39Jx1E462loPz/humpubli";
 
 
 //**************************************
@@ -124,10 +126,10 @@ void loop()
     
         // Calculo la distancio con esta ecuacion
         Distance = duration * 0.034 / 2;
-        if(BOTON==1) PUERTA="ABIERTA";  // son para escribir si esta abierta o cerrada la puerta segun el caso
+        if(BOTON==0) PUERTA="ABIERTA";  // son para escribir si esta abierta o cerrada la puerta segun el caso
         else PUERTA="CERRADA";
          str = " Distancia: " + String (Distance) + " Cm "+"Humedad: "+ h +"% Temperatura: "+ t +"°C puerta: "+ PUERTA;        
-         tem = "Temperatura: "+ String (t) +"°C "; 
+         tem = "tem:"+ String (t) +"°C "; 
          hum = "Humedad: "+ String (h) +"% "; 
           // muestro en pantalla las variables
           if(D_ant != Distance || h_ant != h || t_ant != t) //si hay algun cambio muestre en pantalla
@@ -135,12 +137,12 @@ void loop()
              str.toCharArray(msg,76);                 //convierta str en arreclo char con 57 carateres 
              client.publish(root_topic_publish,msg);  
             }
-            if(cont > 500)    // esto es para masomenos contar 25segundos para mostrar el valor de temperatura y humedad
+            if(cont > 3000)    // esto es para masomenos contar 25segundos para mostrar el valor de temperatura y humedad
                  {
                   tem.toCharArray(msgtem,25);
-                  client.publish(root_topic_tem,msgtem);
+                  client.publish(root_topic_tempubli,msgtem);
                   hum.toCharArray(msghum,25);
-                  client.publish(root_topic_hum,msghum);
+                  client.publish(root_topic_humpubli,msghum);
                   cont = 0;
                  }
                 else cont++;
@@ -151,8 +153,9 @@ void loop()
           BOTON = digitalRead(SENSOR);  //lee si esta abierta la puerta
           if(BOTON == 0 && BANDERA1 < 1)
             {
-            //correo();                   //se llama a correo para decir que esta abierta la puerta
+            correo();                   //se llama a correo para decir que esta abierta la puerta
             Serial.print("se abrio la puerta con el boton \n ");
+            Serial.print(   BANDERA1  );
             BANDERA1 ++;
             }
           casos();
@@ -207,17 +210,9 @@ void reconnect()
       {
         Serial.println("Conectado!");
         // Nos suscribimos
-          if(client.subscribe(root_topic_subscribe))     //aqui es donde 
+          if(client.subscribe(root_topic_subscribe) && client.subscribe(root_topic_tem) && client.subscribe(root_topic_hum))     //aqui es donde 
           {
-            Serial.println("Suscripcion_1 ok");
-                if(client.subscribe(root_topic_tem))  
-                {
-                  Serial.println("Suscripcion_2 ok");
-                      if(client.subscribe(root_topic_hum))  
-                      {
-                        Serial.println("Suscripcion_3 ok");
-                      }
-                }
+            Serial.println("Suscripcion ok");
           }
           
           else
@@ -260,23 +255,23 @@ void reconnect()
    void casos()                                                // funcion "funcion casos"
       { 
           //estos if son para prender y apagar el bombillo de la abitacion # 1
-          if (mens == "a0") //if (mens == "cuarto1off")
+          if (mens == "ventilador_off") //if (mens == "cuarto1off")
              {
-               digitalWrite(LED, HIGH); 
+               digitalWrite(VENT, HIGH); 
                 //Serial.println("entro a apagar cuarto1 " );
              }
-           if (mens == "a1") //if (mens == "cuarto1on")
+           if (mens == "ventilador_on") //if (mens == "cuarto1on")
              {
-               digitalWrite(LED, LOW); 
+               digitalWrite(VENT, LOW); 
                 //Serial.println("entro a prender cuarto1"); 
              } 
            //estos if son para prender y apagar el bombillo de la abitacion # 2  
-           if (mens == "b0") //if (mens == "cuarto2off")
+           if (mens == "bombillo_off") //if (mens == "cuarto2off")
              {
                 digitalWrite(LED1, HIGH); 
                 //Serial.println("entro a apagar cuarto2"); 
              } 
-           if (mens == "b1") //if (mens == "cuarto2on")
+           if (mens == "bombillo_on") //if (mens == "cuarto2on")
              {
                 digitalWrite(LED1, LOW); 
                // Serial.println("entro a prender cuarto2"); 
@@ -293,18 +288,19 @@ void reconnect()
                // Serial.println("entro a prender ventilador"); 
              } 
             //estos if son para cerrar o abrir la puerta principal de la casa   
-           if (mens == "d0"&& BANDERA1 > 0)  //if (mens == "cerrar")
+           if (mens == "puerta_off"&& BANDERA1 > 0)  //if (mens == "cerrar")
              {
                 servo1.write(0);    // ubica el servo a 0 grados
                 delay(800);   
                 BANDERA1 = 0;
+                if(BOTON == 0 )BANDERA1++;
                 Serial.println("entro a cerrar puerta"); 
              } 
              
-           if (mens == "d1" && BANDERA1 < 1) //if (mens == "abrir")
+           if (mens == "puerta_on" && BANDERA1 < 1) //if (mens == "abrir")
              {  
                 servo1.write(180);    // ubica el servo a 0 grados
-                 // correo(); 
+                  correo(); 
                   BANDERA1++;                //reseteo la bandera 
                   Serial.println("entro a abrir puerta"); 
                 delay(200); 
@@ -325,7 +321,7 @@ void reconnect()
                 if(mnum != mnuman)             //si cambio la tempratura
                 {
                   BANDERA = 1;                 //uso esta bandera para indicar que es para la temperatura
-                  //correo(); 
+                  correo(); 
                   BANDERA = 0;                //reseteo la bandera 
                 }
                 mnuman = mnum;                //para que no entre si no cuando la temperatura cambie             
