@@ -25,7 +25,7 @@ int LED = 13;                           //para prender el bombillo 1
 int LED1 = 12;                          //para prender el bombillo 2
 int VENT = 14;                          //para prender el ventilador
 int LED_MAIL = 18;                      //para prender el led indicador que se envio el mensaje
-int BOTON = 0;                          //una bandera
+int BOTON ;                          //una bandera
 int SENSOR = 4;                         //para leer la apertura de la puerta
 int mnuman = 0;                         //para almacenas el valor de temperatura aterior en entero
 int cont = 500 ;
@@ -87,6 +87,7 @@ void setup_wifi();
     pinMode(LED, OUTPUT);
     pinMode(LED1, OUTPUT);
     pinMode(VENT, OUTPUT);
+    pinMode(BOTON, OUTPUT);
     pinMode(LED_MAIL, OUTPUT);    
     pinMode(SENSOR, INPUT);     //Pulsador o sensor como entrada   
     digitalWrite(LED, HIGH);     //les doy un alto iniciando para que no se prendan los relay ya que prenden con ceros
@@ -148,9 +149,11 @@ void loop()
           t_ant=t;
           
           BOTON = digitalRead(SENSOR);  //lee si esta abierta la puerta
-          if(BOTON == 1)
+          if(BOTON == 0 && BANDERA1 < 1)
             {
-            correo();                   //se llama a correo para decir que esta abierta la puerta
+            //correo();                   //se llama a correo para decir que esta abierta la puerta
+            Serial.print("se abrio la puerta con el boton \n ");
+            BANDERA1 ++;
             }
           casos();
        }
@@ -200,14 +203,23 @@ void reconnect()
     String clientId = "IOTICOS_H_W_";
     clientId += String(random(0xffff), HEX);
     // Intentamos conectar
-      if (client.connect(clientId.c_str(),mqtt_user,mqtt_pass)) 
+      if (client.connect(clientId.c_str(),mqtt_user,mqtt_pass)) //aqui
       {
         Serial.println("Conectado!");
         // Nos suscribimos
-          if(client.subscribe(root_topic_subscribe))
+          if(client.subscribe(root_topic_subscribe))     //aqui es donde 
           {
-            Serial.println("Suscripcion ok");
+            Serial.println("Suscripcion_1 ok");
+                if(client.subscribe(root_topic_tem))  
+                {
+                  Serial.println("Suscripcion_2 ok");
+                      if(client.subscribe(root_topic_hum))  
+                      {
+                        Serial.println("Suscripcion_3 ok");
+                      }
+                }
           }
+          
           else
           {
             Serial.println("fallo Suscripciión");
@@ -284,7 +296,7 @@ void reconnect()
            if (mens == "d0"&& BANDERA1 > 0)  //if (mens == "cerrar")
              {
                 servo1.write(0);    // ubica el servo a 0 grados
-                delay(200);   
+                delay(800);   
                 BANDERA1 = 0;
                 Serial.println("entro a cerrar puerta"); 
              } 
@@ -292,11 +304,10 @@ void reconnect()
            if (mens == "d1" && BANDERA1 < 1) //if (mens == "abrir")
              {  
                 servo1.write(180);    // ubica el servo a 0 grados
-                  correo(); 
+                 // correo(); 
                   BANDERA1++;                //reseteo la bandera 
                   Serial.println("entro a abrir puerta"); 
                 delay(200); 
-                //Serial.println("entro a abrir puerta"); 
              }     
            //este if es para cuando el cliente desea poner una temeratura para que se prende el ventilador
            if (mens[0] == 't' && mens[1] == 'e' && mens[2] == 'm' && mens[3] == ':')
@@ -314,7 +325,7 @@ void reconnect()
                 if(mnum != mnuman)             //si cambio la tempratura
                 {
                   BANDERA = 1;                 //uso esta bandera para indicar que es para la temperatura
-                  correo(); 
+                  //correo(); 
                   BANDERA = 0;                //reseteo la bandera 
                 }
                 mnuman = mnum;                //para que no entre si no cuando la temperatura cambie             
@@ -340,7 +351,7 @@ void reconnect()
     if (!MailClient.sendMail(datosSMTP))                       //si tiene datos comience a enviar correo electrónico.
     Serial.println("Error enviando el correo, " + MailClient.smtpErrorReason());
     datosSMTP.empty();           //Borrar todos los datos del objeto datosSMTP para liberar memoria
-      delay(9000);                 // esperao 9min a que se envie el mensaje
+      delay(5000);                 // esperao 9min a que se envie el mensaje
      digitalWrite(LED_MAIL, LOW);    //apago led despues de enviar el mensaje
      BANDERA==0;
   } 
