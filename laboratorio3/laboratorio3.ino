@@ -4,6 +4,7 @@
 #include <ESP32Servo.h>                    // incluye libreria de Servo para la placa
 #include "DHT.h"                      //incluyo la libretia para el sensor de temperatura
 #include "ESP32_MailClient.h"         //incluyo la libreria para enviar correos
+                                                  #include "ThingSpeak.h" 
 
 #define DHTPIN 15
 #define DHTTYPE DHT11
@@ -12,6 +13,9 @@
 DHT dht(DHTPIN, DHTTYPE);             //creo objeto para el sensor de temperatura
 Servo servo1;
 Servo servo2;                          // crea objeto para el servo
+
+                                        unsigned long channelID = 1404814;
+                                        const char * WriteAPIKey = "JWQZ5YKE6EPNEGGJ";
 
 // defino variables del sensor ultrasonico
 const int trigPin = 2;               // son las entradas para el sensor de distancia
@@ -75,7 +79,6 @@ const char* ssid = "BOCADITOS DE AMOUR";
 const char* password =  "Kinkbmx.";
 
 
-
 //**************************************
 //*********** GLOBALES   ***************
 //**************************************
@@ -98,6 +101,7 @@ void setup_wifi();
   {  pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(9600);
     setup_wifi();
+                                                          ThingSpeak.begin(espClient);
     client.setServer(mqtt_server, mqtt_port); 
     client.setCallback(callback);
     servo1.attach(PINSERVO, PULSOMIN, PULSOMAX);  // inicializacion de servo
@@ -135,6 +139,13 @@ void loop()
       { 
          h = dht.readHumidity();            //leo la humedad del sensor y lo guardo en h
          t = dht.readTemperature();         //leo la temperatura del sensor y lo guardo en t
+                                             
+                                             ThingSpeak.setField(1,t);
+                                             ThingSpeak.setField(2,h);
+                                             ThingSpeak.writeFields(channelID , WriteAPIKey);
+                                             delay(20000);
+         
+         Serial.print("se abrio la puerta con el boton IF \n ");
          
          // limpia los pines de trigpin 
         digitalWrite(trigPin, LOW);
