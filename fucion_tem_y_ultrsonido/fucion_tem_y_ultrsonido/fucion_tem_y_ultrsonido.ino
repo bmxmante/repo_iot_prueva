@@ -10,8 +10,8 @@ DHT dht(DHTPIN, DHTTYPE);
     const int echoPin = 5;
 
 // defines variables
-long duration;
-int D_ant,Distance;
+float duration;
+double D_ant,Distance;
 String stringdistance;
 String JSON;
 float  h_ant,t_ant;
@@ -25,14 +25,13 @@ void setup()
 }
 
 void loop()
-{
+{ 
+    float h = dht.readHumidity();
+    float t = dht.readTemperature();
   
     // limpia los pines de trigpin 
     digitalWrite(trigPin, LOW);
     delayMicroseconds(2);
-
-    float h = dht.readHumidity();
-    float t = dht.readTemperature();
 
     // coloca el trigpin en alto durante 10 microsegundos
     digitalWrite(trigPin, HIGH);

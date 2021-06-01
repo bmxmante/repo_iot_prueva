@@ -19,12 +19,12 @@ int PULSOMIN = 900;                     // pulso minimo en microsegundos
 int PULSOMAX = 2000;                    // pulso maximo en microsegundos
 
 // defino demas variables
-long duration;
-int D_ant,Distance,bandera,mnum,BANDERA;
+float duration;
+int D_ant,bandera,mnum,BANDERA;
+double Distance;
 int LED = 14;                           //para prender el bombillo 1
 int LED1 = 12;                          //para prender el bombillo 2
 int VENT = 13;                          //para prender el ventilador
-                          int prueva = 25;
 int LED_MAIL = 18;                      //para prender el led indicador que se envio el mensaje
 int BOTON ;                          //una bandera
 int SENSOR = 4;                         //para leer la apertura de la puerta
@@ -90,14 +90,12 @@ void setup_wifi();
     pinMode(LED, OUTPUT);
     pinMode(LED1, OUTPUT);
     pinMode(VENT, OUTPUT);
-                                      pinMode(prueva, OUTPUT);  
     pinMode(BOTON, OUTPUT);
     pinMode(LED_MAIL, OUTPUT);    
     pinMode(SENSOR, INPUT);     //Pulsador o sensor como entrada   
     digitalWrite(LED, HIGH);     //les doy un alto iniciando para que no se prendan los relay ya que prenden con ceros
     digitalWrite(LED1, HIGH);
     digitalWrite(VENT, HIGH);
-                                      digitalWrite(prueva, LOW);
     digitalWrite(LED_MAIL, LOW);
     dht.begin();                        //inicio el modulo dht11
   }
@@ -261,13 +259,11 @@ void reconnect()
           if (mens == "ventilador_off") //if (mens == "cuarto1off")
              {
                digitalWrite(VENT, HIGH); 
-                                          digitalWrite(prueva, LOW); 
                 //Serial.println("entro a apagar cuarto1 " );
              }
            if (mens == "ventilador_on") //if (mens == "cuarto1on")
              {
                digitalWrite(VENT, LOW); 
-                                            digitalWrite(prueva, HIGH); 
                 //Serial.println("entro a prender cuarto1"); 
              } 
            //estos if son para prender y apagar el bombillo de la abitacion # 2  
@@ -356,110 +352,3 @@ void reconnect()
      digitalWrite(LED_MAIL, LOW);    //apago led despues de enviar el mensaje
      BANDERA==0;
   } 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-
-  
-
-#include <Arduino.h>
-#include <WiFi.h>
-#include <PubSubClient.h>
-#include "ESP32_MailClient.h"              //incluyo la libreria para enviar correos
-#include <PID_v1.h>
-
-
-    const int trigPin = 2;
-    const int echoPin = 5;
-    
-      float duration,ant_duration; 
-      double Distance;
-      const int mbomba = 27;
-      float prueva;
-
-
-void setup()
-{                                            pinMode(trigPin, OUTPUT); // defino como salidad el pin tring del ultrasoido
-                                             pinMode(echoPin, INPUT);  // defino como entrada el pin echo del ultrasoido
-                                             pinMode(mbomba , OUTPUT);  // Salida
-                                             digitalWrite(mbomba , HIGH);
-                                             Serial.begin(9600);
-}
-
-void loop()
-  {                                    
-           sensor_bonba();           
-           delay(1000);                       
-        if(Distance >= 8) {
-              digitalWrite(mbomba, LOW);
-              Serial.println( " entro a prender motor"); 
-          }                       
-        if(Distance < 4)  {
-              digitalWrite(mbomba, HIGH);
-              Serial.println( " entro a apagar motor");
-          } 
- 
-  }
-
-  void sensor_bonba()
- {
-    digitalWrite(trigPin, LOW);
-    delayMicroseconds(2);                                          
-    digitalWrite(trigPin, HIGH);// coloca el trigpin en alto durante 10 microsegundos
-    delayMicroseconds(10);
-    digitalWrite(trigPin, LOW);
-
-    // lee el pin echo y debuelvo el tiempo de ida y vuelta de la onda en microsegundos
-    duration = pulseIn(echoPin, HIGH);
-    prueva = ant_duration - duration;
-    if(prueva < 0) prueva = prueva*(-1);
-  if(prueva < 100)
-    {
-    // Calculating the distance
-    Distance = duration * 0.034 / 2;
-    }
-    Serial.print("prueva:");
-    Serial.print(prueva); 
-    Serial.print("  duracion:  ");
-    Serial.print(duration); 
-    Serial.print("  duracion ante: ");
-    Serial.print(ant_duration);
-    ant_duration = duration;
-    Serial.print("Distancia:  ");
-    Serial.println( String (Distance) + " Cm");
-     
-  
- }
-*/

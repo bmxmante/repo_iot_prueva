@@ -17,8 +17,11 @@ const char *root_topic_publish = "hF39Jx1E462loPz/output";
 //**************************************
 //*********** WIFICONFIG ***************
 //**************************************
-const char* ssid = "BOCADITOS DE AMOUR";
-const char* password =  "Kinkbmx.";
+//const char* ssid = "BOCADITOS DE AMOUR";
+//const char* password =  "Kinkbmx.";
+
+const char* ssid = "Daniel Rincon";
+const char* password =  "12345678";
 
 
 
