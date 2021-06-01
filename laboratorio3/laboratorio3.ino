@@ -21,6 +21,7 @@ int PINSERVO = 25;                       // pin 26 conectado a señal del servo
 int PINSERVO2 = 26; 
 int PULSOMIN = 900;                     // pulso minimo en microsegundos
 int PULSOMAX = 2000;                    // pulso maximo en microsegundos
+
 int PULSOMIN2 = 900;                     // pulso minimo en microsegundos
 int PULSOMAX2 = 2000;                    // pulso maximo en microsegundos
 
@@ -172,17 +173,18 @@ void loop()
           t_ant=t;
           
           BOTON = digitalRead(SENSOR);  //lee si esta abierta la puerta
-          if(BOTON == 0 && BANDERAS1 == 1)
+          if(BOTON == 0 && BANDERAS1 == 0)
             {
             //correo();                   //se llama a correo para decir que esta abierta la puerta
-            Serial.print("se abrio la puerta con el boton \n ");
-            Serial.print(   BANDERAS1  );
-            BANDERAS1 = 0;
-            }
-           else  
-           {
-            Serial.print(   BANDERAS1  );
+            Serial.print("se abrio la puerta con el boton IF \n ");
+            Serial.print(   BOTON  );
             BANDERAS1 = 1;
+            }
+           if(BOTON == 1 && BANDERAS1 == 1)
+           {
+            Serial.print("se abrio la puerta con el boton ELSE \n ");
+            Serial.print(   BOTON  );
+            BANDERAS1 = 0;
            }
           casos();
        }
@@ -251,7 +253,7 @@ void loop()
            if (mens == "s10" )  
              {
                 BOTON = digitalRead(SENSOR); 
-                if(BOTON == 1)
+                if(BOTON == 0)
                   {
                   servo1.write(0);    // ubica el servo a 0 grados
                   delay(300);   
@@ -262,7 +264,7 @@ void loop()
            if (mens == "s11" ) 
              {  
               BOTON = digitalRead(SENSOR);
-              if(BOTON == 0)
+              if(BOTON == 1)
                 {
                 servo1.write(180);    // ubica el servo a 0 grados
                 //correo(); 
