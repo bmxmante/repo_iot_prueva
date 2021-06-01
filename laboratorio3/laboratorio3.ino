@@ -16,6 +16,9 @@ Servo servo2;                          // crea objeto para el servo
 
                                         unsigned long channelID = 1404814;
                                         const char * WriteAPIKey = "JWQZ5YKE6EPNEGGJ";
+                                        unsigned long tiempo = 0;
+                                        unsigned long tiempo2 = 0;
+                                        int periodo =20000;
 
 // defino variables del sensor ultrasonico
 const int trigPin = 2;               // son las entradas para el sensor de distancia
@@ -129,7 +132,7 @@ void setup_wifi();
 
 void loop() 
 {
-    
+    tiempo =millis();   
     if (!client.connected())         // si el cliente no se conecta entra
     {
       reconnect();
@@ -139,13 +142,15 @@ void loop()
       { 
          h = dht.readHumidity();            //leo la humedad del sensor y lo guardo en h
          t = dht.readTemperature();         //leo la temperatura del sensor y lo guardo en t
-                                             
-                                             ThingSpeak.setField(1,t);
-                                             ThingSpeak.setField(2,h);
-                                             ThingSpeak.writeFields(channelID , WriteAPIKey);
-                                             delay(20000);
+                                             if(tiempo > tiempo2 + periodo)
+                                             {
+                                                 ThingSpeak.setField(1,t);
+                                                 ThingSpeak.setField(2,h);
+                                                 ThingSpeak.writeFields(channelID , WriteAPIKey);
+                                                 Serial.print("                        se envio informacion al thingspeaker                                     \n ");
+                                                 tiempo2 = tiempo;
+                                             }
          
-         Serial.print("se abrio la puerta con el boton IF \n ");
          
          // limpia los pines de trigpin 
         digitalWrite(trigPin, LOW);
@@ -184,17 +189,16 @@ void loop()
           t_ant=t;
           
           BOTON = digitalRead(SENSOR);  //lee si esta abierta la puerta
+          Serial.print(BOTON);
           if(BOTON == 0 && BANDERAS1 == 0)
             {
             //correo();                   //se llama a correo para decir que esta abierta la puerta
-            Serial.print("se abrio la puerta con el boton IF \n ");
-            Serial.print(   BOTON  );
+            Serial.print("se abrio la puerta con el boton IF con el boton  \n ");
             BANDERAS1 = 1;
             }
            if(BOTON == 1 && BANDERAS1 == 1)
            {
             Serial.print("se abrio la puerta con el boton ELSE \n ");
-            Serial.print(   BOTON  );
             BANDERAS1 = 0;
            }
           casos();
